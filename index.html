@@ -66,25 +66,38 @@
             position: relative;
         }
 
-        .coin:before {
-            content: "🎲";
-            font-size: 60px;
-            position: absolute;
-            top: -80px;
-            animation: float 1.5s infinite ease-in-out;
+        .coin.spin {
+            transform: rotate(1080deg) scale(1.2);
         }
 
-        @keyframes float {
+        .dice {
+            position: fixed;
+            top: 10px;
+            left: 10px;
+            font-size: 60px;
+            animation: bounceDice 2s infinite ease-in-out;
+        }
+
+        @keyframes bounceDice {
             0%, 100% {
                 transform: translateY(0);
             }
             50% {
-                transform: translateY(-10px);
+                transform: translateY(-20px);
             }
         }
 
-        .coin.spin {
-            transform: rotate(1080deg) scale(1.2);
+        .dice.spin {
+            animation: spinDice 1s linear;
+        }
+
+        @keyframes spinDice {
+            from {
+                transform: rotate(0deg);
+            }
+            to {
+                transform: rotate(360deg);
+            }
         }
 
         .result {
@@ -169,6 +182,7 @@
     </div>
     <button id="resetBtn" class="hidden">Play Again</button>
     <div class="theme-toggle" id="themeToggle">Toggle Theme</div>
+    <div class="dice" id="dice">🎲</div>
 
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.4.0/dist/confetti.browser.min.js"></script>
 
@@ -180,6 +194,7 @@
         const title = document.getElementById('title');
         const progressBar = document.getElementById('progressBar');
         const resetBtn = document.getElementById('resetBtn');
+        const dice = document.getElementById('dice');
         let isLightTheme = true;
 
         const options = ['Yes ✅', 'No ❌'];
@@ -197,6 +212,7 @@
         coin.addEventListener('click', () => {
             if (spins < 3) {
                 coin.classList.add('spin');
+                dice.classList.add('spin');
                 result.textContent = '';
                 progressBar.style.width = ((spins + 1) / 3) * 100 + '%';
 
@@ -214,6 +230,7 @@
                     spins++;
                     scoreDisplay.textContent = `Spins: ${spins}/3 | Yes: ${yesScore} | No: ${noScore}`;
                     coin.classList.remove('spin');
+                    dice.classList.remove('spin');
 
                     if (spins === 3) {
                         if (yesScore > noScore) {
