@@ -125,10 +125,14 @@
         .theme-toggle:hover {
             background-color: var(--secondary-color);
         }
+
+        .hidden {
+            display: none;
+        }
     </style>
 </head>
 <body class="light-theme">
-    <h1>Text or Ignore?</h1>
+    <h1 id="title">Text or Ignore?</h1>
     <div class="coin" id="coin">Tap Me</div>
     <div class="result" id="result"></div>
     <div class="score" id="score"></div>
@@ -139,6 +143,7 @@
         const result = document.getElementById('result');
         const scoreDisplay = document.getElementById('score');
         const themeToggle = document.getElementById('themeToggle');
+        const title = document.getElementById('title');
         let isLightTheme = true;
 
         const options = ['Text 📨', 'Ignore 🙅‍♂️'];
@@ -166,7 +171,7 @@
                     scoreDisplay.textContent = `Spins: ${spins}/3 | Text: ${textScore} | Ignore: ${ignoreScore}`;
                     coin.classList.remove('spin');
 
-                    // If we reached 3 spins, display final results
+                    // After the 3rd spin, hide all elements except the final result
                     if (spins === 3) {
                         if (textScore > ignoreScore) {
                             scoreDisplay.textContent += ' 🏆 Final: Text Wins!';
@@ -175,6 +180,17 @@
                         } else {
                             scoreDisplay.textContent += ' 🤝 Final: It’s a Tie!';
                         }
+
+                        // Hide elements
+                        coin.classList.add('hidden');
+                        title.classList.add('hidden');
+                        themeToggle.classList.add('hidden');
+                        result.classList.add('hidden');
+
+                        // Show final result with score
+                        setTimeout(() => {
+                            scoreDisplay.style.fontSize = '50px'; // Make final result prominent
+                        }, 500);
                     }
                 }, 1000);
             }
