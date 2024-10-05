@@ -16,6 +16,7 @@
 
         body {
             display: flex;
+            flex-direction: column;
             justify-content: center;
             align-items: center;
             height: 100vh;
@@ -35,8 +36,6 @@
         }
 
         h1 {
-            position: fixed;
-            top: 50px;
             font-size: 48px;
             animation: bounce 2s infinite ease-in-out;
         }
@@ -104,6 +103,12 @@
             }
         }
 
+        .score {
+            margin-top: 20px;
+            font-size: 28px;
+            color: var(--primary-color);
+        }
+
         .theme-toggle {
             position: fixed;
             top: 10px;
@@ -126,30 +131,53 @@
     <h1>Text or Ignore?</h1>
     <div class="coin" id="coin">Tap Me</div>
     <div class="result" id="result"></div>
+    <div class="score" id="score"></div>
     <div class="theme-toggle" id="themeToggle">Toggle Theme</div>
 
     <script>
         const coin = document.getElementById('coin');
         const result = document.getElementById('result');
+        const scoreDisplay = document.getElementById('score');
         const themeToggle = document.getElementById('themeToggle');
         let isLightTheme = true;
 
         const options = ['Text 📨', 'Ignore 🙅‍♂️'];
+        let textScore = 0;
+        let ignoreScore = 0;
+        let spins = 0;
 
         coin.addEventListener('click', () => {
-            // Add the spin animation
-            coin.classList.add('spin');
-            result.textContent = '';
+            if (spins < 3) {
+                coin.classList.add('spin');
+                result.textContent = '';
 
-            // Simulate a spin delay
-            setTimeout(() => {
-                const choice = options[Math.floor(Math.random() * options.length)];
-                result.textContent = choice;
+                setTimeout(() => {
+                    const choice = options[Math.floor(Math.random() * options.length)];
+                    result.textContent = choice;
 
-                // Add a little bouncing effect when showing the result
-                result.style.animation = 'fadeIn 1s ease-out';
-                coin.classList.remove('spin');
-            }, 1000);
+                    if (choice.includes('Text')) {
+                        textScore++;
+                    } else {
+                        ignoreScore++;
+                    }
+
+                    // Update spin count and score
+                    spins++;
+                    scoreDisplay.textContent = `Spins: ${spins}/3 | Text: ${textScore} | Ignore: ${ignoreScore}`;
+                    coin.classList.remove('spin');
+
+                    // If we reached 3 spins, display final results
+                    if (spins === 3) {
+                        if (textScore > ignoreScore) {
+                            scoreDisplay.textContent += ' 🏆 Final: Text Wins!';
+                        } else if (ignoreScore > textScore) {
+                            scoreDisplay.textContent += ' 🏆 Final: Ignore Wins!';
+                        } else {
+                            scoreDisplay.textContent += ' 🤝 Final: It’s a Tie!';
+                        }
+                    }
+                }, 1000);
+            }
         });
 
         themeToggle.addEventListener('click', () => {
