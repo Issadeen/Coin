@@ -68,6 +68,7 @@
 
         .coin.spin {
             transform: rotate(1080deg) scale(1.2);
+            box-shadow: 0 0 20px 10px rgba(255, 111, 97, 0.7); /* Glow effect */
         }
 
         .dice {
@@ -170,6 +171,15 @@
         #resetBtn:hover {
             background-color: var(--primary-color);
         }
+
+        #countdown {
+            font-size: 48px;
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--primary-color);
+            animation: fadeIn 1s ease-out;
+        }
     </style>
 </head>
 <body class="light-theme">
@@ -183,6 +193,7 @@
     <button id="resetBtn" class="hidden">Play Again</button>
     <div class="theme-toggle" id="themeToggle">Toggle Theme</div>
     <div class="dice" id="dice">🎲</div>
+    <div id="countdown" class="hidden">3...2...1...</div>
 
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.4.0/dist/confetti.browser.min.js"></script>
 
@@ -195,6 +206,7 @@
         const progressBar = document.getElementById('progressBar');
         const resetBtn = document.getElementById('resetBtn');
         const dice = document.getElementById('dice');
+        const countdown = document.getElementById('countdown');
         let isLightTheme = true;
 
         const options = ['Yes ✅', 'No ❌'];
@@ -211,67 +223,93 @@
 
         coin.addEventListener('click', () => {
             if (spins < 3) {
-                coin.classList.add('spin');
-                dice.classList.add('spin');
-                result.textContent = '';
-                progressBar.style.width = ((spins + 1) / 3) * 100 + '%';
+                startCountdown(() => {
+                    coin.classList.add('spin');
+                    dice.classList.add('spin');
+                    result.textContent = '';
+                    progressBar.style.width = ((spins + 1) / 3) * 100 + '%';
 
-                setTimeout(() => {
-                    const choice = options[Math.floor(Math.random() * options.length)];
-                    result.textContent = choice;
-                    result.textContent += '\n' + funMessages[Math.floor(Math.random() * funMessages.length)];
+                    setTimeout(() => {
+                        const choice = options[Math.floor(Math.random() * options.length)];
+                        result.textContent = choice;
+                        result.textContent += '\n' + funMessages[Math.floor(Math.random() * funMessages.length)];
 
-                    if (choice.includes('Yes')) {
-                        yesScore++;
-                    } else {
-                        noScore++;
-                    }
-
-                    spins++;
-                    scoreDisplay.textContent = `Spins: ${spins}/3 | Yes: ${yesScore} | No: ${noScore}`;
-                    coin.classList.remove('spin');
-                    dice.classList.remove('spin');
-
-                    if (spins === 3) {
-                        if (yesScore > noScore) {
-                            scoreDisplay.textContent += ' 🏆 Final: Yes Wins!';
-                        } else if (noScore > yesScore) {
-                            scoreDisplay.textContent += ' 🏆 Final: No Wins!';
+                        if (choice.includes('Yes')) {
+                            yesScore++;
                         } else {
-                            scoreDisplay.textContent += ' 🤝 Final: It’s a Tie!';
+                            noScore++;
                         }
 
-                        coin.classList.add('hidden');
-                        title.classList.add('hidden');
-                        themeToggle.classList.add('hidden');
-                        result.classList.add('hidden');
+                        spins++;
+                        scoreDisplay.textContent = `Spins: ${spins}/3 | Yes: ${yesScore} | No: ${noScore}`;
+                        coin.classList.remove('spin');
+                        dice.classList.remove('spin');
 
-                        setTimeout(() => {
-                            scoreDisplay.style.fontSize = '50px';
-                            resetBtn.style.display = 'block';
-                            confetti({
-                                particleCount: 200,
-                                spread: 60,
-                                origin: { y: 0.6 }
-                            });
-                        }, 500);
-                    }
-                }, 1000);
+                        if (spins === 3) {
+                            if (yesScore > noScore) {
+                                scoreDisplay.textContent += ' 🏆 Final: Yes Wins!';
+                            } else if (noScore > yesScore) {
+                                scoreDisplay.textContent += ' 🏆 Final: No Wins!';
+                            } else {
+                                scoreDisplay.textContent += ' 🤝 Final: It’s a Tie!';
+                            }
+
+                            coin.classList.add('hidden');
+                            title.classList.add('hidden');
+                            themeToggle.classList.add('hidden');
+                            result.classList.add('hidden');
+
+                            setTimeout(() => {
+                                scoreDisplay.style.fontSize = '50px';
+                                resetBtn.style.display = 'block';
+                                confetti({
+                                    particleCount: 200,
+                                    spread: 60,
+                                    origin: { y: 0.6 }
+                                });
+                            }, 500);
+                        }
+                    }, 1000);
+                });
             }
         });
+
+        function startCountdown(callback) {
+            let counter = 3;
+            countdown.textContent = `${counter}...`;
+            countdown.classList.remove('hidden');
+
+            const countdownInterval = setInterval(() => {
+                counter--;
+                if (counter >= 0) {
+                    countdown.textContent = `${counter}...`;
+                } else {
+                    clearInterval(countdownInterval);
+                    countdown.classList.add('hidden');
+                    callback();
+                }
+            }, 1000);
+        }
 
         themeToggle.addEventListener('click', () => {
             isLightTheme = !isLightTheme;
             document.body.classList.toggle('light-theme', isLightTheme);
             document.body.classList.toggle('dark-theme', !isLightTheme);
+
+            confetti({
+                particleCount: 50,
+                spread: 70,
+                origin: { y: 0.5 },
+                colors: isLightTheme ? ['#FF6F61'] : ['#4A90E2']
+            });
         });
 
         resetBtn.addEventListener('click', () => {
             spins = 0;
             yesScore = 0;
             noScore = 0;
-            result.textContent = '';
             scoreDisplay.textContent = '';
+            result.textContent = '';
             progressBar.style.width = '0%';
             resetBtn.style.display = 'none';
             scoreDisplay.style.fontSize = '28px';
