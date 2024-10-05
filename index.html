@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Text or Ignore</title>
+    <style>
+        :root {
+            --light-bg: #f0f0f0;
+            --dark-bg: #1a1a1a;
+            --light-text: #000000;
+            --dark-text: #ffffff;
+        }
+
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+
+        .light-theme {
+            background-color: var(--light-bg);
+            color: var(--light-text);
+        }
+
+        .dark-theme {
+            background-color: var(--dark-bg);
+            color: var(--dark-text);
+        }
+
+        .coin {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 24px;
+            font-weight: bold;
+            background-color: #4a90e2;
+            color: white;
+            cursor: pointer;
+            transition: transform 1s ease;
+        }
+
+        .coin.spin {
+            transform: rotate(720deg);
+        }
+
+        .result {
+            margin-top: 20px;
+            font-size: 30px;
+        }
+
+        .theme-toggle {
+            position: fixed;
+            top: 10px;
+            right: 10px;
+            background-color: #ccc;
+            padding: 10px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+    </style>
+</head>
+<body class="light-theme">
+    <div class="coin" id="coin">Tap to Spin</div>
+    <div class="result" id="result"></div>
+    <div class="theme-toggle" id="themeToggle">Toggle Theme</div>
+
+    <script>
+        const coin = document.getElementById('coin');
+        const result = document.getElementById('result');
+        const themeToggle = document.getElementById('themeToggle');
+        let isLightTheme = true;
+
+        const options = ['Text', 'Ignore'];
+
+        coin.addEventListener('click', () => {
+            // Add the spin animation
+            coin.classList.add('spin');
+            // Remove the result text
+            result.textContent = '';
+
+            // Simulate a spin delay
+            setTimeout(() => {
+                // Randomly pick Text or Ignore
+                const choice = options[Math.floor(Math.random() * options.length)];
+                result.textContent = choice;
+                // Remove spin class to allow future spins
+                coin.classList.remove('spin');
+            }, 1000); // 1 second spin
+        });
+
+        themeToggle.addEventListener('click', () => {
+            isLightTheme = !isLightTheme;
+            if (isLightTheme) {
+                document.body.classList.add('light-theme');
+                document.body.classList.remove('dark-theme');
+            } else {
+                document.body.classList.add('dark-theme');
+                document.body.classList.remove('light-theme');
+            }
+        });
+    </script>
+</body>
+</html>
